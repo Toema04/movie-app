@@ -1,0 +1,67 @@
+
+https://watchy.up.railway.app/api/v1
+________________________________________
+
+get Single Movie By Id:
+	/movie/:id
+--------------------------------
+get movies division:
+	/movie/all/movies
+--------------------------------
+get TopRated division:
+	/movie/all/TopRated
+--------------------------------
+get TVSeries division:
+	/movie/all/TVSeries
+--------------------------------
+get upComing division:
+	/movie/all/upComing
+--------------------------------
+get trending division:
+	/movie/all/trending
+--------------------------------
+get All division:
+	/movie/all/a
+--------------------------------
+Display a movie by Id:
+	/movie/displayMovie/:id
+	you will get "html" element in the json response 
+--------------------------------
+Register:
+	/auth/register 
+
+	inputs needed in the body:
+	{ "name": "",
+  	  "email": "",
+  	  "password": "",
+	}
+--------------------------------
+Login:	
+	/auth/login
+
+	inputs needed in the body:
+	{ "email": "",
+	  "password": ""
+	}
+--------------------------------
+Logout:	
+	/auth/logout
+--------------------------------
+User Info:
+	/user/showMe
+	
+	token needed in a Bearer-Token format ex:bearer aslkdfjj
+-- An ex of using this endpoint:
+
+fetch(`https://movies-production-bcff.up.railway.app/api/v1/user/showMe`,{
+method: 'GET', 
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Token}`, // Include the token in the Authorization header
+    }
+})
+.then(response => response.json())
+.then(response => // doing any thing)
+})
+.catch(error => console.error("Error fetching admin info:", error));
+}
