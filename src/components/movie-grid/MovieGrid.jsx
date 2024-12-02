@@ -1,28 +1,64 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import './movie-grid.scss';
-
 import MovieCard from '../movie-card/MovieCard';
-import Button, { OutlineButton } from '../button/Button';
 import Input from '../input/Input'
-
+import Button from '../button/Button'; // Add this import
+import Skeleton from '../skeleton/Skeleton';
 import tmdbApi, { category, movieType, tvType } from '../../api/tmdbApi';
 
 const MovieGrid = props => {
-
     const [items, setItems] = useState([]);
-
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    
+    // Add these refs
+    const observer = useRef();
+    const lastMovieElementRef = useRef();
 
     const { keyword } = useParams();
 
+    // Modify getList to handle initial load
     useEffect(() => {
         const getList = async () => {
+            try {
+                let response = null;
+                if (keyword === undefined) {
+                    const params = {};
+                    switch(props.category) {
+                        case category.movie:
+                            response = await tmdbApi.getMoviesList(movieType.upcoming, {params});
+                            break;
+                        default:
+                            response = await tmdbApi.getTvList(tvType.popular, {params});
+                    }
+                } else {
+                    const params = {
+                        query: keyword
+                    }
+                    response = await tmdbApi.search(props.category, {params});
+                }
+                setItems(response.results);
+                setTotalPage(response.total_pages);
+            } catch (error) {
+                console.log('Error fetching initial data:', error);
+            }
+        }
+        getList();
+    }, [props.category, keyword]);
+
+    // Add loadMore function
+    const loadMore = async () => {
+        if (loading || page >= totalPage) return;
+
+        try {
+            setLoading(true);
             let response = null;
             if (keyword === undefined) {
-                const params = {};
+                const params = {
+                    page: page + 1
+                };
                 switch(props.category) {
                     case category.movie:
                         response = await tmdbApi.getMoviesList(movieType.upcoming, {params});
@@ -32,39 +68,44 @@ const MovieGrid = props => {
                 }
             } else {
                 const params = {
+                    page: page + 1,
                     query: keyword
                 }
                 response = await tmdbApi.search(props.category, {params});
             }
-            setItems(response.results);
-            setTotalPage(response.total_pages);
+            setItems(prev => [...prev, ...response.results]);
+            setPage(page + 1);
+        } catch (error) {
+            console.log('Error loading more:', error);
+        } finally {
+            setLoading(false);
         }
-        getList();
-    }, [props.category, keyword]);
+    };
 
-    const loadMore = async () => {
-        let response = null;
-        if (keyword === undefined) {
-            const params = {
-                page: page + 1
-            };
-            switch(props.category) {
-                case category.movie:
-                    response = await tmdbApi.getMoviesList(movieType.upcoming, {params});
-                    break;
-                default:
-                    response = await tmdbApi.getTvList(tvType.popular, {params});
+    // Add intersection observer
+    useEffect(() => {
+        const options = {
+            root: null,
+            rootMargin: '20px',
+            threshold: 0.5
+        };
+
+        observer.current = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !loading) {
+                loadMore();
             }
-        } else {
-            const params = {
-                page: page + 1,
-                query: keyword
-            }
-            response = await tmdbApi.search(props.category, {params});
+        }, options);
+
+        if (lastMovieElementRef.current) {
+            observer.current.observe(lastMovieElementRef.current);
         }
-        setItems([...items, ...response.results]);
-        setPage(page + 1);
-    }
+
+        return () => {
+            if (observer.current) {
+                observer.current.disconnect();
+            }
+        };
+    }, [loading, page, totalPage]);
 
     return (
         <>
@@ -72,17 +113,35 @@ const MovieGrid = props => {
                 <MovieSearch category={props.category} keyword={keyword}/>
             </div>
             <div className="movie-grid">
-                {
-                    items.map((item, i) => <MovieCard category={props.category} item={item} key={i}/>)
-                }
+                {items.map((item, i) => {
+                    if (items.length === i + 1) {
+                        // Add ref to last element
+                        return (
+                            <div ref={lastMovieElementRef} key={i}>
+                                <MovieCard category={props.category} item={item} />
+                            </div>
+                        );
+                    } else {
+                        return (
+                            <MovieCard category={props.category} item={item} key={i}/>
+                        );
+                    }
+                })}
             </div>
-            {
-                page < totalPage ? (
-                    <div className="movie-grid__loadmore">
-                        <OutlineButton className="small" onClick={loadMore}>Load more</OutlineButton>
+            {loading && (
+                <>
+                    <div className="loading-more">
+                        <div className="movie-grid">
+                            {[...Array(4)].map((_, index) => (
+                                <Skeleton key={`loading-more-${index}`} />
+                            ))}
+                        </div>
                     </div>
-                ) : null
-            }
+                    {/* <div className="loading">
+                        Loading...
+                    </div> */}
+                </>
+            )}
         </>
     );
 }

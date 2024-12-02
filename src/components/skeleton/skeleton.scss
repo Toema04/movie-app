@@ -1,0 +1,52 @@
+@use "../../scss/" as *;
+
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1rem;
+
+    &__poster {
+        padding-top: 160%;
+        border-radius: $border-radius;
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+    &__text {
+        padding-top: 1rem;
+        text-align: center;
+    }
+}
+
+.loading-text {
+    color: $main-color;
+    font-size: 1.2rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}

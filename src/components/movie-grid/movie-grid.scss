@@ -9,10 +9,11 @@
     @include tablet {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+}
 
-    &__loadmore {
-        text-align: center;
-    }
+
+.loading-more {
+    margin-top: 2rem;
 }
 
 .movie-search {
