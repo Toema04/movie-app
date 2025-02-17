@@ -10,9 +10,11 @@ Welcome to **Filmify**, a sleek and modern movie streaming app built with **Reac
 
 ### Home Page
 
-![Uploading screencapture-movie-app-sepia-nine-21-vercel-app-2025-02-15-17_43_46.png…](https://github.com/Toema04/movie-app/blob/main)
 
 
+![image_7](https://github.com/user-attachments/assets/050dd814-faf3-442a-89aa-50435f3b589c)
+
+![screen](https://github.com/user-attachments/assets/cc88b4ec-b60a-4435-aa46-b160b49ba7c3)
 
 
 ### TV Series Page
