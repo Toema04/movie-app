@@ -11,9 +11,6 @@ Welcome to **Filmify**, a sleek and modern movie streaming app built with **Reac
 ### Home Page
 
 
-
-![image_7](https://github.com/user-attachments/assets/050dd814-faf3-442a-89aa-50435f3b589c)
-
 ![screen](https://github.com/user-attachments/assets/cc88b4ec-b60a-4435-aa46-b160b49ba7c3)
 
 
